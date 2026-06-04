@@ -1,0 +1,221 @@
+.modal-venda-overlay {
+    align-items: center;
+    animation: overlayEntrada .18s ease;
+    background-color: rgba(15, 15, 18, .62);
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    padding: 18px;
+    position: fixed;
+    z-index: 20;
+}
+
+.modal-venda {
+    animation: modalEntrada .22s ease;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
+    max-height: calc(100vh - 36px);
+    max-width: 430px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+.modal-venda-header {
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    padding: 18px 20px;
+}
+
+.modal-venda-header h2 {
+    color: #272727;
+    font-size: 20px;
+}
+
+.modal-venda-fechar {
+    align-items: center;
+    background-color: #f2f2f2;
+    border: none;
+    border-radius: 50%;
+    color: #555;
+    cursor: pointer;
+    display: flex;
+    font-weight: bold;
+    height: 34px;
+    justify-content: center;
+    width: 34px;
+}
+
+.modal-venda-imagem {
+    display: block;
+    height: 190px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.modal-venda-info {
+    display: grid;
+    gap: 10px;
+    padding: 18px 20px 8px;
+}
+
+.modal-venda-info p {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.modal-venda-info span,
+.modal-venda-quantidade label,
+.modal-venda-total span {
+    color: #666;
+    font-size: 14px;
+}
+
+.modal-venda-info strong {
+    color: #262626;
+    font-size: 14px;
+    text-align: right;
+}
+
+.modal-venda-quantidade {
+    display: grid;
+    gap: 10px;
+    padding: 12px 20px;
+}
+
+.controle-quantidade {
+    align-items: center;
+    display: grid;
+    grid-template-columns: 46px 1fr 46px;
+    gap: 10px;
+}
+
+.controle-quantidade button {
+    background-color: #6d0019;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: bold;
+    height: 44px;
+}
+
+.controle-quantidade button:disabled {
+    background-color: #d1d1d1;
+    cursor: not-allowed;
+}
+
+.controle-quantidade input {
+    border: 1px solid #d4d4d4;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    height: 44px;
+    text-align: center;
+    width: 100%;
+}
+
+.controle-quantidade input:focus {
+    border-color: #6d0019;
+    outline: none;
+}
+
+.modal-venda-erro {
+    background-color: #fff1f1;
+    border: 1px solid #f3c4c4;
+    border-radius: 8px;
+    color: #b42318;
+    font-size: 13px;
+    padding: 9px 10px;
+}
+
+.modal-venda-total {
+    align-items: center;
+    background-color: #f7f7f7;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    margin: 6px 20px 16px;
+    padding: 14px;
+}
+
+.modal-venda-total strong {
+    color: #6d0019;
+    font-size: 22px;
+}
+
+.modal-venda-actions {
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 16px 20px 20px;
+}
+
+.modal-venda-actions button {
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    min-height: 42px;
+    padding: 11px 16px;
+}
+
+.modal-venda-actions button:first-child {
+    background-color: #eeeeee;
+    color: #333;
+}
+
+.modal-venda-actions .confirmar {
+    background-color: #2e7d4f;
+    color: white;
+}
+
+@keyframes overlayEntrada {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalEntrada {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 520px) {
+    .modal-venda-overlay {
+        padding: 12px;
+    }
+
+    .modal-venda-header,
+    .modal-venda-info,
+    .modal-venda-quantidade,
+    .modal-venda-actions {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .modal-venda-total {
+        margin-left: 14px;
+        margin-right: 14px;
+    }
+
+    .modal-venda-actions {
+        flex-direction: column;
+    }
+}

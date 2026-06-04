@@ -1,0 +1,34 @@
+.header {
+    background-color: #6d0019;
+
+    color: white;
+
+    padding: 15px 30px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-logo {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 0;
+}
+
+.header span {
+    font-size: 14px;
+}
+
+@media (max-width: 620px) {
+    .header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+        padding: 14px;
+    }
+}

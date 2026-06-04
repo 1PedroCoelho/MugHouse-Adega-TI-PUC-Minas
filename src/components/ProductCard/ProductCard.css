@@ -1,0 +1,115 @@
+.card {
+    background-color: white;
+
+    border-radius: 8px;
+
+    overflow: hidden;
+
+    box-shadow: 0 2px 5px rgba(0,0,0,.1);
+
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+.card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.card h3 {
+    padding: 10px 10px 0;
+    font-size: 16px;
+}
+
+.card p {
+    color: #666;
+    font-size: 13px;
+    padding: 4px 10px 0;
+}
+
+.card .descricao-produto {
+    line-height: 1.45;
+    min-height: 40px;
+}
+
+.precos {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px;
+}
+
+.precos span {
+    color: #666;
+    font-size: 13px;
+}
+
+.precos strong {
+    color: #222;
+    font-size: 18px;
+}
+
+.badge {
+    margin: 10px;
+
+    display: inline-block;
+
+    color: white;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+}
+
+.badge.em-estoque {
+    background-color: #27ae60;
+}
+
+.badge.sem-estoque {
+    background-color: #777;
+}
+
+.badge.pedido-feito {
+    background-color: #f39c12;
+}
+
+.card-actions {
+    border-top: 1px solid #eee;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 10px;
+}
+
+.card-actions button {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #fafafa;
+    color: #333;
+    cursor: pointer;
+    font-weight: bold;
+    min-height: 38px;
+    padding: 8px;
+}
+
+.card-actions button:hover:not(:disabled) {
+    border-color: #6d0019;
+    color: #6d0019;
+}
+
+.card-actions button:disabled {
+    cursor: not-allowed;
+    opacity: .5;
+}
+
+.card-actions .danger {
+    background-color: #fff4f4;
+    border-color: #f1c2c2;
+    color: #c0392b;
+}

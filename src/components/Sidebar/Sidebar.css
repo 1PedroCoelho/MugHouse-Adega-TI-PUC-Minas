@@ -1,0 +1,63 @@
+.sidebar {
+    width: 300px;
+    background-color: white;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    flex-shrink: 0;
+}
+
+.sidebar button {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+
+    border: none;
+    border-radius: 6px;
+
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.sidebar button {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.sidebar h3 {
+    margin: 20px 0 10px;
+}
+
+.resumo-estoque,
+.mais-vendidos {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.resumo-estoque,
+.mais-vendidos {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.resumo-estoque span,
+.mais-vendidos span,
+.vazio {
+    color: #666;
+    font-size: 13px;
+}
+
+.resumo-estoque strong,
+.mais-vendidos strong {
+    color: #2d2d2d;
+}
+
+@media (max-width: 900px) {
+    .sidebar {
+        border-bottom: 1px solid #ddd;
+        border-right: none;
+        width: 100%;
+    }
+}
