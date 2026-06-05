@@ -10,6 +10,12 @@ import {
   filtrarProdutos,
   obterMaisVendidos30d
 } from "../../utils/filtrosProdutos"
+import {
+  getProdutosDoJsonBin,
+  getProdutosDoCache,
+  salvarProdutosNoCache,
+  salvarProdutosNoJsonBin
+} from "../../services/produtosService"
 
 const produtoInicial = {
   nome: "",
@@ -22,19 +28,23 @@ const produtoInicial = {
 }
 
 function hidratarProdutos(produtosSalvos) {
-  return produtosSalvos.map((produto) => {
-    const produtoSeed = produtos.find((item) => item.nome === produto.nome)
-      || produtos.find((item) => item.id === produto.id)
-
-    return {
-      ...produtoSeed,
-      ...produto,
-      descricao: produto.descricao ?? produtoSeed?.descricao ?? "",
-      vendas: produto.vendas ?? produtoSeed?.vendas ?? 0,
-      vendas30d: produto.vendas30d ?? produto.vendas ?? produtoSeed?.vendas30d ?? 0,
-      pedidoFeito: produto.pedidoFeito ?? produto.quantidade === 0
-    }
-  })
+  // Se receber um array, processa normalmente
+  // Se receber um objeto com chave 'produtos', extrai o array
+  const produtosArray = Array.isArray(produtosSalvos) ? produtosSalvos : (produtosSalvos?.produtos || [])
+  
+  return produtosArray.map((produto) => ({
+    id: produto.id,
+    nome: produto.nome,
+    precoCusto: produto.precoCusto,
+    precoVenda: produto.precoVenda,
+    quantidade: produto.quantidade,
+    categoria: produto.categoria,
+    imagem: produto.imagem,
+    descricao: produto.descricao ?? "",
+    vendas: produto.vendas ?? 0,
+    vendas30d: produto.vendas30d ?? produto.vendas ?? 0,
+    pedidoFeito: produto.pedidoFeito ?? produto.quantidade === 0
+  }))
 }
 
 export default function Estoque() {
@@ -43,15 +53,47 @@ export default function Estoque() {
     const produtosSalvos = localStorage.getItem("produtos")
     return produtosSalvos ? hidratarProdutos(JSON.parse(produtosSalvos)) : produtos
   })
+  const [carregando, setCarregando] = useState(true)
   const [filtros, setFiltros] = useState(FILTROS_INICIAIS)
   const [formulario, setFormulario] = useState(produtoInicial)
   const [produtoEditando, setProdutoEditando] = useState(null)
   const [formAberto, setFormAberto] = useState(false)
+  const [view, setView] = useState("list")
   const [produtoVenda, setProdutoVenda] = useState(null)
   const [modalVendaKey, setModalVendaKey] = useState(0)
 
+  // Carregar dados do JSONBin ou cache
+  useEffect(() => {
+    async function carregarProdutos() {
+      setCarregando(true)
+      try {
+        // Tenta buscar do JSONBin
+        const produtosJsonBin = await getProdutosDoJsonBin()
+        
+        if (produtosJsonBin) {
+          setListaProdutos(hidratarProdutos(produtosJsonBin))
+          salvarProdutosNoCache(produtosJsonBin)
+        } else {
+          // Se falhar, tenta usar o cache
+          const produtosCache = getProdutosDoCache()
+          if (produtosCache) {
+            setListaProdutos(hidratarProdutos(produtosCache))
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao carregar produtos:", error)
+      } finally {
+        setCarregando(false)
+      }
+    }
+
+    carregarProdutos()
+  }, [])
+
   useEffect(() => {
     localStorage.setItem("produtos", JSON.stringify(listaProdutos))
+    // Também tenta salvar no JSONBin
+    salvarProdutosNoJsonBin(listaProdutos)
   }, [listaProdutos])
 
   const precoLimite = useMemo(() => {
@@ -101,12 +143,14 @@ export default function Estoque() {
     })
     setProdutoEditando(produto.id)
     setFormAberto(true)
+    setView("edit-page")
   }
 
   function fecharFormulario() {
     setFormulario(produtoInicial)
     setProdutoEditando(null)
     setFormAberto(false)
+    setView("list")
   }
 
   function atualizarCampo(campo, valor) {
@@ -215,30 +259,140 @@ export default function Estoque() {
   return (
     <div className="estoque-container" id="produtos">
 
-      <SidebarFiltros
-        filtros={filtrosComPrecoValido}
-        precoLimite={precoLimite}
-        produtosMaisVendidos={produtosMaisVendidos}
-        onFiltrosChange={setFiltros}
-        onLimparFiltros={limparFiltros}
-        onAdicionar={abrirCadastro}
-        onRelatorio={abrirRelatorioProduto}
-      />
+{view === "list" && (
+          <SidebarFiltros
+            filtros={filtrosComPrecoValido}
+            precoLimite={precoLimite}
+            produtosMaisVendidos={produtosMaisVendidos}
+            onFiltrosChange={setFiltros}
+            onLimparFiltros={limparFiltros}
+            onAdicionar={abrirCadastro}
+            onRelatorio={abrirRelatorioProduto}
+          />
+        )}
 
       <main>
 
-        <section className="estoque-topo">
-          <div>
-            <h1>Produtos em estoque</h1>
-            <p>Cadastre produtos, registre entradas e controle vendas.</p>
+        {view === "list" && (
+          <section className="estoque-topo">
+            <div>
+              <h1>Meus produtos</h1>
+              <p>Cadastre produtos, registre entradas e controle vendas.</p>
+            </div>
+          </section>
+        )}
+
+        {view === "edit-page" && formAberto && (
+          <div className="detalhes-header" style={{ marginBottom: "18px" }}>
+            <div>
+              <h2>Editar produto</h2>
+              <p>{formulario.categoria}</p>
+            </div>
+            <button type="button" onClick={fecharFormulario}>
+              Voltar para produtos
+            </button>
           </div>
+        )}
 
-          <button className="botao-principal" onClick={abrirCadastro}>
-            Novo produto
-          </button>
-        </section>
+        {formAberto && view === "edit-page" ? (
+          <div className="produto-edit-card">
+            <div className="produto-edit-card__visual">
+              <img
+                src={formulario.imagem || "https://images.unsplash.com/photo-1606765962248-7ff407b51667"}
+                alt={formulario.nome || "Produto em edição"}
+              />
+            </div>
 
-        {formAberto && (
+            <form className="produto-form produto-form--edit" onSubmit={salvarProduto}>
+              <h2>{produtoEditando ? "Editar produto" : "Cadastrar produto"}</h2>
+
+              <label>
+                Nome
+                <input
+                  type="text"
+                  value={formulario.nome}
+                  onChange={(e) => atualizarCampo("nome", e.target.value)}
+                  required
+                />
+              </label>
+
+              <label>
+                Categoria
+                <input
+                  type="text"
+                  value={formulario.categoria}
+                  onChange={(e) => atualizarCampo("categoria", e.target.value)}
+                  required
+                />
+              </label>
+
+              <label>
+                Preco de custo
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={formulario.precoCusto}
+                  onChange={(e) => atualizarCampo("precoCusto", e.target.value)}
+                  required
+                />
+              </label>
+
+              <label>
+                Preco de venda
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={formulario.precoVenda}
+                  onChange={(e) => atualizarCampo("precoVenda", e.target.value)}
+                  required
+                />
+              </label>
+
+              <label>
+                Quantidade
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={formulario.quantidade}
+                  onChange={(e) => atualizarCampo("quantidade", e.target.value)}
+                  required
+                />
+              </label>
+
+              <label>
+                Imagem
+                <input
+                  type="url"
+                  value={formulario.imagem}
+                  onChange={(e) => atualizarCampo("imagem", e.target.value)}
+                  placeholder="https://..."
+                />
+              </label>
+
+              <label className="form-full">
+                Descricao
+                <input
+                  type="text"
+                  value={formulario.descricao || ""}
+                  onChange={(e) => atualizarCampo("descricao", e.target.value)}
+                  placeholder="Resumo opcional do produto"
+                />
+              </label>
+
+              <div className="form-actions">
+                <button type="submit">
+                  {produtoEditando ? "Salvar alteracoes" : "Cadastrar"}
+                </button>
+                <button type="button" onClick={fecharFormulario}>
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        ) : formAberto ? (
           <form className="produto-form" onSubmit={salvarProduto}>
             <h2>{produtoEditando ? "Editar produto" : "Cadastrar produto"}</h2>
 
@@ -327,33 +481,37 @@ export default function Estoque() {
               </button>
             </div>
           </form>
+        ) : null}
+
+
+        {view === "list" && (
+          <>
+            <div className="resultado-filtros">
+              <strong>{produtosFiltrados.length}</strong>
+              <span>
+                {produtosFiltrados.length === 1 ? "produto encontrado" : "produtos encontrados"}
+              </span>
+            </div>
+          </>
         )}
 
-        <div className="resultado-filtros">
-          <strong>{produtosFiltrados.length}</strong>
-          <span>
-            {produtosFiltrados.length === 1 ? "produto encontrado" : "produtos encontrados"}
-          </span>
-        </div>
-
-        {produtosFiltrados.length === 0 ? (
-          <div className="estado-vazio">
-            Nenhum produto encontrado.
-          </div>
-        ) : (
-          <div className="grid-produtos">
-            {produtosFiltrados.map(produto => (
-              <ProductCard
-                key={produto.id}
-                produto={produto}
-                onEditar={abrirEdicao}
-                onExcluir={excluirProduto}
-                onEntrada={registrarEntrada}
-                onSaida={abrirModalVenda}
-              />
-            ))}
-          </div>
-        )}
+        {view === "list" ? (
+          produtosFiltrados.length === 0 ? (
+            <div className="estado-vazio">
+              Nenhum produto encontrado.
+            </div>
+          ) : (
+            <div className="grid-produtos">
+              {produtosFiltrados.map(produto => (
+                <ProductCard
+                  key={produto.id}
+                  produto={produto}
+                  onVerDetalhes={abrirEdicao}
+                />
+              ))}
+            </div>
+          )
+        ) : null}
 
       </main>
 

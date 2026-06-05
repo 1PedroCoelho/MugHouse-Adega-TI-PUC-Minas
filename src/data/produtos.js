@@ -11,7 +11,7 @@ export const produtos = [
     vendas30d: 340,
     pedidoFeito: false,
     imagem:
-      "https://images.unsplash.com/photo-1582819509237-df99f8f6b56c"
+      "https://www.varanda.com.br/vodka-orloff-1l-7891050000903/p?srsltid=AfmBOor4zvcx81Ed1Ws3_XhH1s6X47RRk040N8NY5VQohrjPd7Pa5jQj"
   },
   {
     id: 2,
@@ -25,7 +25,7 @@ export const produtos = [
     vendas30d: 120,
     pedidoFeito: false,
     imagem:
-      "https://images.unsplash.com/photo-1614313511387-1436a4480ebb"
+      "https://www.bebabonheur.com.br/destilados/vodka/vodka-absolut-1l"
   },
   {
     id: 3,

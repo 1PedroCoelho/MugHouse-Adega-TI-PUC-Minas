@@ -8,6 +8,8 @@
     box-shadow: 0 2px 5px rgba(0,0,0,.1);
 
     transition: 0.2s;
+
+    cursor: pointer;
 }
 
 .card:hover {
@@ -18,6 +20,7 @@
     width: 100%;
     height: 220px;
     object-fit: cover;
+    object-position: center;
 }
 
 .card h3 {
@@ -81,9 +84,8 @@
 
 .card-actions {
     border-top: 1px solid #eee;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    display: flex;
+    justify-content: center;
     padding: 10px;
 }
 
@@ -95,7 +97,9 @@
     cursor: pointer;
     font-weight: bold;
     min-height: 38px;
-    padding: 8px;
+    padding: 8px 18px;
+    width: 100%;
+    max-width: 220px;
 }
 
 .card-actions button:hover:not(:disabled) {

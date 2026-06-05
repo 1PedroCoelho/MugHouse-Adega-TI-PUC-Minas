@@ -4,15 +4,16 @@
         radial-gradient(circle at 78% 18%, rgba(109, 0, 25, 0.16), transparent 28%),
         linear-gradient(135deg, #ffffff 0%, #fff7f9 48%, #f3eef0 100%);
     border: 1px solid #eadfe3;
-    border-radius: 8px;
+    border-radius: 0;
     box-shadow: 0 22px 55px rgba(45, 45, 45, 0.08);
     display: grid;
     gap: 20px;
     grid-template-columns: minmax(0, 1fr) minmax(280px, 0.6fr);
-    margin: 16px auto;
+    margin: 0;
     overflow: hidden;
     padding: 28px 32px;
-    width: min(1180px, calc(100% - 40px));
+    width: 100%;
+    max-width: 100%;
     min-height: 220px;
 }
 
@@ -30,6 +31,7 @@
     letter-spacing: 0.12em;
     margin-bottom: 8px;
     text-transform: uppercase;
+    
 }
 
 .hero-projeto h1 {
@@ -40,11 +42,16 @@
     line-height: 1.05;
     margin-bottom: 10px;
     text-transform: uppercase;
+    margin-left: 120px;
 }
 
 .hero-projeto h1 span {
     color: #6d0019;
-    display: block;
+    display: inline;
+}
+
+.hero-projeto h1 {
+    white-space: nowrap;
 }
 
 .hero-projeto__descricao {
@@ -116,38 +123,36 @@
 .hero-projeto__mockup {
     background: #ffffff;
     border: 1px solid rgba(109, 0, 25, 0.14);
-    border-radius: 8px;
+    border-radius: 50%;
     box-shadow: 0 24px 48px rgba(34, 25, 28, 0.16);
     overflow: hidden;
     transform: rotate(1deg);
-    max-width: 100%;
-    max-height: 220px;
+    width: min(240px, 100%);
+    aspect-ratio: 1 / 1;
+    max-height: 280px;
+    margin-right: 250px;
 }
 
 .hero-projeto__mockup-barra {
     align-items: center;
     background: #fbf8f9;
-    border-bottom: 1px solid #eadfe3;
     display: flex;
-    gap: 7px;
-    height: 28px;
+    gap: 5px;
+    height: 5px;
     padding: 0 10px;
 }
 
-.hero-projeto__mockup-barra span {
-    background: #d8c8ce;
-    border-radius: 50%;
-    height: 8px;
-    width: 8px;
-}
+
 
 .hero-projeto__mockup img {
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 10 / 10;
+    display: block;
     height: auto;
-    max-height: 180px;
+    max-height: 300px;
     object-fit: cover;
     object-position: top center;
     width: 100%;
+    
 }
 
 @media (max-width: 980px) {
