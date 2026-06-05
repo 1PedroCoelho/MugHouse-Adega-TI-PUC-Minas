@@ -507,6 +507,7 @@ export default function Estoque() {
                   key={produto.id}
                   produto={produto}
                   onVerDetalhes={abrirEdicao}
+                  onExcluir={excluirProduto}
                 />
               ))}
             </div>

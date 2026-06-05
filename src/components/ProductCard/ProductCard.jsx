@@ -1,5 +1,5 @@
 import "./ProductCard.css";
-export default function ProductCard({ produto, onVerDetalhes }) {
+export default function ProductCard({ produto, onVerDetalhes, onExcluir }) {
   return (
     <div className="card">
       <img
@@ -31,6 +31,9 @@ export default function ProductCard({ produto, onVerDetalhes }) {
       <div className="card-actions">
         <button type="button" onClick={() => onVerDetalhes(produto)}>
           Ver detalhes
+        </button>
+        <button type="button" onClick={() => onExcluir(produto.id)} className="btn-excluir">
+          Excluir
         </button>
       </div>
     </div>
