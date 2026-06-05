@@ -16,6 +16,7 @@ import {
   salvarProdutosNoCache,
   salvarProdutosNoJsonBin
 } from "../../services/produtosService"
+import { salvarVenda } from "../../services/vendasService"
 
 const produtoInicial = {
   nome: "",
@@ -235,6 +236,15 @@ export default function Estoque() {
   }
 
   function confirmarVenda(id, quantidade) {
+    // Encontrar o produto sendo vendido
+    const produtoVendido = listaProdutos.find(p => p.id === id);
+
+    if (!produtoVendido) {
+      console.error("Produto não encontrado");
+      return;
+    }
+
+    // Atualizar estoque e vendas no estado
     setListaProdutos((produtosAtuais) =>
       produtosAtuais.map((produto) =>
         produto.id === id
@@ -247,8 +257,24 @@ export default function Estoque() {
             }
           : produto
       )
-    )
-    fecharModalVenda()
+    );
+
+    // Salvar venda no JSONBin
+    salvarVenda({
+      produtoId: produtoVendido.id,
+      produtoNome: produtoVendido.nome,
+      quantidade: quantidade,
+      precoUnitario: produtoVendido.precoVenda,
+      precoCustoUnitario: produtoVendido.precoCusto
+    }).then((resultado) => {
+      if (resultado.sucesso) {
+        console.log("Venda registrada:", resultado.venda);
+      } else {
+        console.error("Falha ao registrar venda:", resultado.mensagem);
+      }
+    });
+
+    fecharModalVenda();
   }
 
   function abrirRelatorioProduto(produto) {
