@@ -72,10 +72,10 @@ export default function Relatorios() {
     [vendas30d]
   );
 
-  // Receita estimada (30 dias)
+  // Receita estimada (valor total em estoque)
   const receita30d = useMemo(
-    () => vendas30d.reduce((total, venda) => total + venda.valorTotal, 0),
-    [vendas30d]
+    () => produtos.reduce((total, produto) => total + (produto.precoVenda * produto.quantidade), 0),
+    [produtos]
   );
 
   // Produtos mais vendidos (últimos 30 dias)
