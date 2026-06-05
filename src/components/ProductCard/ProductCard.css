@@ -117,3 +117,15 @@
     border-color: #f1c2c2;
     color: #c0392b;
 }
+
+.card-actions .btn-venda {
+  background-color: #6d0019;
+  border-color: black;
+  color: white;
+}
+
+.card-actions .btn-venda:hover:not(:disabled) {
+  border-color: black;
+  color: white;
+  background-color: #c0392b;
+}

@@ -1,5 +1,6 @@
 import "./ProductCard.css";
-export default function ProductCard({ produto, onVerDetalhes, onExcluir }) {
+
+export default function ProductCard({ produto, onVerDetalhes, onExcluir, onVenda }) {
   return (
     <div className="card">
       <img
@@ -31,6 +32,14 @@ export default function ProductCard({ produto, onVerDetalhes, onExcluir }) {
       <div className="card-actions">
         <button type="button" onClick={() => onVerDetalhes(produto)}>
           Ver detalhes
+        </button>
+        <button 
+          type="button" 
+          onClick={() => onVenda(produto.id)}
+          disabled={produto.quantidade === 0}
+          className="btn-venda"
+        >
+          Venda
         </button>
         <button type="button" onClick={() => onExcluir(produto.id)} className="btn-excluir">
           Excluir

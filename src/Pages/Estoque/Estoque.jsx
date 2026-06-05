@@ -240,14 +240,15 @@ export default function Estoque() {
         produto.id === id
           ? {
               ...produto,
-              quantidade: produto.quantidade - quantidade,
+              quantidade: Math.max(0, produto.quantidade - quantidade),
               vendas: (produto.vendas || 0) + quantidade,
               vendas30d: (produto.vendas30d || produto.vendas || 0) + quantidade,
-              pedidoFeito: produto.quantidade - quantidade === 0 ? true : produto.pedidoFeito
+              pedidoFeito: Math.max(0, produto.quantidade - quantidade) === 0 ? true : produto.pedidoFeito
             }
           : produto
       )
     )
+    fecharModalVenda()
   }
 
   function abrirRelatorioProduto(produto) {
@@ -507,6 +508,7 @@ export default function Estoque() {
                   key={produto.id}
                   produto={produto}
                   onVerDetalhes={abrirEdicao}
+                  onVenda={abrirModalVenda}
                   onExcluir={excluirProduto}
                 />
               ))}
