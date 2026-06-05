@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { produtos as produtosPadrao } from "../../data/produtos";
+import { getVendas } from "../../services/vendasService";
 import "./Relatorios.css";
 
 function hidratarProdutos(produtosSalvos) {
@@ -21,7 +22,7 @@ function hidratarProdutos(produtosSalvos) {
   }));
 }
 
-function carregarRelatorios() {
+function carregarProdutos() {
   const produtosSalvos = localStorage.getItem("produtos");
   return produtosSalvos ? hidratarProdutos(JSON.parse(produtosSalvos)) : hidratarProdutos(produtosPadrao);
 }
@@ -30,33 +31,85 @@ function formatCurrency(valor) {
   return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+function obterVendas30Dias(vendas) {
+  const agora = new Date();
+  const trinta_dias_atras = new Date(agora.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  return vendas.filter((venda) => {
+    const dataVenda = new Date(venda.dataVenda);
+    return dataVenda >= trinta_dias_atras && dataVenda <= agora;
+  });
+}
+
 export default function Relatorios() {
-  const [produtos, setProdutos] = useState(() => carregarRelatorios());
+  const [produtos, setProdutos] = useState(() => carregarProdutos());
+  const [vendas, setVendas] = useState([]);
+  const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    setProdutos(carregarRelatorios());
+    async function carregarDados() {
+      setCarregando(true);
+      
+      // Carregar produtos
+      setProdutos(carregarProdutos());
+      
+      // Carregar vendas do JsonBin
+      const vendasCarregadas = await getVendas();
+      setVendas(vendasCarregadas || []);
+      
+      setCarregando(false);
+    }
+
+    carregarDados();
   }, []);
 
+  // Filtrar vendas dos últimos 30 dias
+  const vendas30d = useMemo(() => obterVendas30Dias(vendas), [vendas]);
+
+  // Total vendido (30 dias)
   const totalVendido30d = useMemo(
-    () => produtos.reduce((total, produto) => total + (produto.vendas30d || 0), 0),
-    [produtos]
+    () => vendas30d.reduce((total, venda) => total + venda.quantidade, 0),
+    [vendas30d]
   );
 
+  // Receita estimada (30 dias)
   const receita30d = useMemo(
-    () => produtos.reduce((total, produto) => total + (produto.vendas30d || 0) * produto.precoVenda, 0),
-    [produtos]
+    () => vendas30d.reduce((total, venda) => total + venda.valorTotal, 0),
+    [vendas30d]
   );
 
-  const maisVendidos = useMemo(
-    () => [...produtos].sort((a, b) => (b.vendas30d || 0) - (a.vendas30d || 0)).slice(0, 5),
-    [produtos]
-  );
+  // Produtos mais vendidos (últimos 30 dias)
+  const maisVendidos = useMemo(() => {
+    const vendidosPorProduto = {};
 
+    vendas30d.forEach((venda) => {
+      if (!vendidosPorProduto[venda.produtoId]) {
+        vendidosPorProduto[venda.produtoId] = {
+          produtoId: venda.produtoId,
+          produtoNome: venda.produtoNome,
+          quantidade: 0
+        };
+      }
+      vendidosPorProduto[venda.produtoId].quantidade += venda.quantidade;
+    });
+
+    return Object.values(vendidosPorProduto)
+      .sort((a, b) => b.quantidade - a.quantidade)
+      .slice(0, 5)
+      .map((item) => ({
+        id: item.produtoId,
+        nome: item.produtoNome,
+        vendas30d: item.quantidade
+      }));
+  }, [vendas30d]);
+
+  // Produtos mais caros (do catálogo)
   const maisCaros = useMemo(
     () => [...produtos].sort((a, b) => b.precoVenda - a.precoVenda).slice(0, 4),
     [produtos]
   );
 
+  // Produtos mais baratos (do catálogo)
   const maisBaratos = useMemo(
     () => [...produtos].sort((a, b) => a.precoVenda - b.precoVenda).slice(0, 4),
     [produtos]
@@ -66,6 +119,20 @@ export default function Relatorios() {
   const menorPreco = maisBaratos[0];
 
   const vendasMax = Math.max(1, ...maisVendidos.map((produto) => produto.vendas30d || 0));
+
+  if (carregando) {
+    return (
+      <section className="relatorios-page">
+        <header className="relatorios-hero">
+          <div>
+            <p className="section-label">Relatórios</p>
+            <h1>Painel de vendas e entradas</h1>
+            <p>Carregando dados...</p>
+          </div>
+        </header>
+      </section>
+    );
+  }
 
   return (
     <section className="relatorios-page">
